@@ -14,21 +14,24 @@ type Storage struct {
 }
 
 type Config struct {
-	AccessKeyID      string
-	AccessKeySecret  string
-	SecurityToken    string
-	Region           string
-	Bucket           string
-	Endpoint         string
-	RootPath         string
-	RoleARN          string
-	RoleSessionName  string
-	SkipValidation   bool
-	MaxRetries       int
-	EnableVersioning string
-	ConnectTimeout   int64
-	UploadPartSize   int64
-	CopyPartSize     int64
+	AccessKeyID               string
+	AccessKeySecret           string
+	SecurityToken             string
+	Region                    string
+	Bucket                    string
+	Endpoint                  string
+	RootPath                  string
+	RoleARN                   string
+	RoleSessionName           string
+	SkipValidation            bool
+	MaxRetries                int
+	EnableVersioning          string
+	ConnectTimeout            int64
+	UploadPartSize            int64
+	CopyPartSize              int64
+	ServerEncryptionMethod    string
+	ServerEncryptionAlgorithm string
+	ServerEncryptionKeyID     string
 }
 
 func NewStorage(config *Config, rootWraps ...storage.WrapRootFolder) (*Storage, error) {

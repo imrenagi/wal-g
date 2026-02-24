@@ -21,6 +21,12 @@ const (
 	VersioningDisabled = "disabled"
 )
 
+const (
+	ServerSideEncryptionAes256 = "AES256"
+	ServerSideEncryptionKMS    = "KMS"
+	ServerSideEncryptionSM4    = "SM4"
+)
+
 type Folder struct {
 	ossAPI *oss.Client
 	bucket string
@@ -187,10 +193,25 @@ func (f *Folder) PutObject(name string, content io.Reader) error {
 func (f *Folder) PutObjectWithContext(ctx context.Context, name string, content io.Reader) error {
 	objectPath := f.GetPath() + name
 
-	_, err := f.uploader.UploadFrom(context.Background(), &oss.PutObjectRequest{
+	req := &oss.PutObjectRequest{
 		Bucket: oss.Ptr(f.bucket),
 		Key:    oss.Ptr(objectPath),
-	}, content)
+	}
+
+	if f.config.ServerEncryptionMethod != "" {
+		switch f.config.ServerEncryptionMethod {
+		case ServerSideEncryptionSM4:
+			req.ServerSideEncryption = oss.Ptr(ServerSideEncryptionSM4)
+		case ServerSideEncryptionKMS:
+			req.ServerSideEncryption = oss.Ptr(ServerSideEncryptionKMS)
+			req.ServerSideDataEncryption = oss.Ptr(f.config.ServerEncryptionAlgorithm)
+			req.ServerSideEncryptionKeyId = oss.Ptr(f.config.ServerEncryptionKeyID)
+		default:
+			req.ServerSideEncryption = oss.Ptr(ServerSideEncryptionAes256)
+		}
+	}
+
+	_, err := f.uploader.UploadFrom(context.Background(), req, content)
 	if err != nil {
 		return fmt.Errorf("failed to put oss object %q: %w", objectPath, err)
 	}
@@ -207,12 +228,27 @@ func (f *Folder) CopyObject(srcPath string, dstPath string) error {
 	src := path.Join(f.GetPath(), srcPath)
 	dst := path.Join(f.GetPath(), dstPath)
 
-	_, err := f.copier.Copy(context.Background(), &oss.CopyObjectRequest{
+	req := &oss.CopyObjectRequest{
 		Bucket:       oss.Ptr(f.bucket),
 		Key:          oss.Ptr(dst),
 		SourceBucket: oss.Ptr(f.bucket),
 		SourceKey:    oss.Ptr(src),
-	})
+	}
+
+	if f.config.ServerEncryptionMethod != "" {
+		switch f.config.ServerEncryptionMethod {
+		case ServerSideEncryptionSM4:
+			req.ServerSideEncryption = oss.Ptr(ServerSideEncryptionSM4)
+		case ServerSideEncryptionKMS:
+			req.ServerSideEncryption = oss.Ptr(ServerSideEncryptionKMS)
+			req.ServerSideDataEncryption = oss.Ptr(f.config.ServerEncryptionAlgorithm)
+			req.ServerSideEncryptionKeyId = oss.Ptr(f.config.ServerEncryptionKeyID)
+		default:
+			req.ServerSideEncryption = oss.Ptr(ServerSideEncryptionAes256)
+		}
+	}
+
+	_, err := f.copier.Copy(context.Background(), req)
 	return err
 }
 

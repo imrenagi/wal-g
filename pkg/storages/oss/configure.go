@@ -12,18 +12,21 @@ import (
 const (
 	// using OSS_ prefix since alicloud credentials package
 	// is following the same convention
-	accessKeyIDSetting     = "OSS_ACCESS_KEY_ID"
-	accessKeySecretSetting = "OSS_ACCESS_KEY_SECRET"
-	securityTokenSetting   = "OSS_SESSION_TOKEN"
-	endpointSetting        = "OSS_ENDPOINT"
-	regionSetting          = "OSS_REGION"
-	roleARNSetting         = "OSS_ROLE_ARN"
-	roleSessionNameSetting = "OSS_ROLE_SESSION_NAME"
-	skipValidationSetting  = "OSS_SKIP_VALIDATION"
-	maxRetriesSetting      = "OSS_MAX_RETRIES"
-	connectTimeoutSetting  = "OSS_CONNECT_TIMEOUT"
-	uploadPartSizeSetting  = "OSS_UPLOAD_PART_SIZE"
-	copyPartSizeSetting    = "OSS_COPY_PART_SIZE"
+	accessKeyIDSetting               = "OSS_ACCESS_KEY_ID"
+	accessKeySecretSetting           = "OSS_ACCESS_KEY_SECRET"
+	securityTokenSetting             = "OSS_SESSION_TOKEN"
+	endpointSetting                  = "OSS_ENDPOINT"
+	regionSetting                    = "OSS_REGION"
+	roleARNSetting                   = "OSS_ROLE_ARN"
+	roleSessionNameSetting           = "OSS_ROLE_SESSION_NAME"
+	skipValidationSetting            = "OSS_SKIP_VALIDATION"
+	maxRetriesSetting                = "OSS_MAX_RETRIES"
+	connectTimeoutSetting            = "OSS_CONNECT_TIMEOUT"
+	uploadPartSizeSetting            = "OSS_UPLOAD_PART_SIZE"
+	copyPartSizeSetting              = "OSS_COPY_PART_SIZE"
+	serverEncryptionMethodSetting    = "OSS_SERVER_ENCRYPTION_METHOD"
+	serverEncryptionAlgorithmSetting = "OSS_SERVER_ENCRYPTION_ALGORITHM"
+	serverEncryptionKeyIDSetting     = "OSS_SERVER_ENCRYPTION_KEY_ID"
 )
 
 var SettingList = []string{
@@ -39,6 +42,9 @@ var SettingList = []string{
 	connectTimeoutSetting,
 	uploadPartSizeSetting,
 	copyPartSizeSetting,
+	serverEncryptionMethodSetting,
+	serverEncryptionAlgorithmSetting,
+	serverEncryptionKeyIDSetting,
 }
 
 const (
@@ -84,20 +90,23 @@ func ConfigureStorage(
 	}
 
 	config := &Config{
-		AccessKeyID:     strings.TrimSpace(settings[accessKeyIDSetting]),
-		AccessKeySecret: strings.TrimSpace(settings[accessKeySecretSetting]),
-		SecurityToken:   strings.TrimSpace(settings[securityTokenSetting]),
-		RoleARN:         strings.TrimSpace(settings[roleARNSetting]),
-		RoleSessionName: strings.TrimSpace(settings[roleSessionNameSetting]),
-		Endpoint:        strings.TrimSpace(settings[endpointSetting]),
-		Bucket:          bucket,
-		RootPath:        rootPath,
-		SkipValidation:  skipValidation,
-		MaxRetries:      maxRetries,
-		Region:          settings[regionSetting],
-		ConnectTimeout:  connectTimeout,
-		UploadPartSize:  uploadPartSize,
-		CopyPartSize:    copyPartSize,
+		AccessKeyID:               strings.TrimSpace(settings[accessKeyIDSetting]),
+		AccessKeySecret:           strings.TrimSpace(settings[accessKeySecretSetting]),
+		SecurityToken:             strings.TrimSpace(settings[securityTokenSetting]),
+		RoleARN:                   strings.TrimSpace(settings[roleARNSetting]),
+		RoleSessionName:           strings.TrimSpace(settings[roleSessionNameSetting]),
+		Endpoint:                  strings.TrimSpace(settings[endpointSetting]),
+		Bucket:                    bucket,
+		RootPath:                  rootPath,
+		SkipValidation:            skipValidation,
+		MaxRetries:                maxRetries,
+		Region:                    settings[regionSetting],
+		ConnectTimeout:            connectTimeout,
+		UploadPartSize:            uploadPartSize,
+		CopyPartSize:              copyPartSize,
+		ServerEncryptionMethod:    strings.TrimSpace(settings[serverEncryptionMethodSetting]),
+		ServerEncryptionAlgorithm: strings.TrimSpace(settings[serverEncryptionAlgorithmSetting]),
+		ServerEncryptionKeyID:     strings.TrimSpace(settings[serverEncryptionKeyIDSetting]),
 	}
 
 	st, err := NewStorage(config, rootWraps...)
